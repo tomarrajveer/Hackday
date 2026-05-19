@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cricbuzz-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cricbuzz-api
+  template:
+    metadata:
+      labels:
+        app: cricbuzz-api
+    spec:
+      containers:
+      - name: api
+        image: cricbuzz-api:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://postgres:supersecretpassword@postgres-service:5432/cricbuzz"
+        - name: SECRET_KEY
+          value: "my-jwt-super-secret-production-key"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
