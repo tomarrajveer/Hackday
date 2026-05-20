@@ -14,7 +14,7 @@ A FastAPI backend for tracking cricket matches in real time — innings, deliver
 
 Pick the path that matches what you have installed.
 
-### Option A — Minikube (recommended for evaluation)
+### Option A — Minikube (recommended)
 
 End-to-end: starts Minikube, builds the image inside Minikube's Docker daemon, applies all manifests, and opens a port-forward so the API is reachable on `http://localhost:8000`.
 
