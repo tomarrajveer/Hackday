@@ -44,17 +44,23 @@ kubectl rollout status statefulset/postgres --timeout=120s
 echo "==> Waiting for API deployment to be ready..."
 kubectl rollout status deployment/cricbuzz-api --timeout=120s
 
-# ── Print access URL ───────────────────────────────────────────────────────────
-API_URL=$(minikube service cricbuzz-api-service --url 2>/dev/null || true)
-if [ -n "$API_URL" ]; then
-  echo ""
-  echo "✓ App is reachable at: ${API_URL}"
-  echo "  Swagger UI:           ${API_URL}/docs"
-  echo "  Health check:         ${API_URL}/health"
-else
-  NODE_IP=$(minikube ip)
-  echo ""
-  echo "✓ App is reachable at: http://${NODE_IP}:30080"
-  echo "  Swagger UI:           http://${NODE_IP}:30080/docs"
-  echo "  Health check:         http://${NODE_IP}:30080/health"
-fi
+# ── Print access instructions ──────────────────────────────────────────────────
+NODE_IP=$(minikube ip)
+echo ""
+echo "✓ Deployment complete."
+echo ""
+echo "To access the API, pick one:"
+echo ""
+echo "  # 1) Open a tunnel (recommended on macOS — leave it running):"
+echo "     minikube service cricbuzz-api-service --url"
+echo ""
+echo "  # 2) Direct NodePort (works on Linux; not reachable from macOS Docker driver):"
+echo "     http://${NODE_IP}:30080"
+echo ""
+echo "  # 3) kubectl port-forward (alternative — leave it running):"
+echo "     kubectl port-forward svc/cricbuzz-api-service 8000:80"
+echo ""
+echo "Useful endpoints once a URL is available:"
+echo "  /health          health check"
+echo "  /docs            Swagger UI"
+echo "  /openapi.json    OpenAPI schema"

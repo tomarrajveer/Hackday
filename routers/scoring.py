@@ -170,11 +170,11 @@ def get_partnership_tracker(match_id: int, db: Session = Depends(get_db)):
     current_p = None
 
     for d in deliveries:
-        pair = tuple(sorted([d.batsman_id, d.non_striker_id]))
+        pair = sorted([d.batsman_id, d.non_striker_id])  # list for consistent comparison
         if current_p is None or current_p["pair"] != pair or current_p["innings"] != d.innings:
             if current_p:
                 partnerships.append(current_p)
-            current_p = {"pair": list(pair), "innings": d.innings, "runs": 0, "balls": 0}
+            current_p = {"pair": pair, "innings": d.innings, "runs": 0, "balls": 0}
 
         # Wides/no-balls add to partnership runs
         current_p["runs"] += d.runs + (d.extras if d.extra_type in ["no-ball", "nb", "wide", "w"] else 0)
