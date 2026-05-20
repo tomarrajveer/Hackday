@@ -9,15 +9,21 @@ from sqlalchemy.orm import Session
 from database import get_db
 import models
 
-# Secret key to encode the JWT token
-SECRET_KEY = os.getenv("SECRET_KEY", "your-super-secret-key-for-local-dev")
+# Required at process start. Fail loudly if missing — never run on a known dev key.
+try:
+    SECRET_KEY = os.environ["SECRET_KEY"]
+except KeyError as e:
+    raise RuntimeError(
+        "SECRET_KEY environment variable is required. "
+        "Set it via your shell, docker-compose.yml, or k8s secret."
+    ) from e
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
+ 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 

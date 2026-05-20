@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from database import engine, Base, get_db
 from routers import users, matches, scoring, stats
@@ -39,4 +40,15 @@ def root():
 
 @app.get("/health")
 def health():
+    """Liveness probe — cheap, no upstream dependencies."""
     return {"status": "ok"}
+
+@app.get("/ready")
+def ready(response: Response, db: Session = Depends(get_db)):
+    """Readiness probe — verifies DB is reachable before accepting traffic."""
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "ready"}
+    except Exception as exc:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        return {"status": "not ready", "detail": str(exc)}
