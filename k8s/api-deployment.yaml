@@ -20,18 +20,31 @@ spec:
         - containerPort: 8000
         env:
         - name: DATABASE_URL
-          value: "postgresql://postgres:supersecretpassword@postgres-service:5432/cricbuzz"
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: DATABASE_URL
         - name: SECRET_KEY
-          value: "my-jwt-super-secret-production-key"
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: JWT_SECRET_KEY
+        - name: DB_POOL_SIZE
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-configmap
+              key: DB_POOL_SIZE
         livenessProbe:
           httpGet:
-            path: /
+            path: /health
             port: 8000
           initialDelaySeconds: 15
           periodSeconds: 15
+          failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /
+            path: /health
             port: 8000
           initialDelaySeconds: 5
           periodSeconds: 10
+          failureThreshold: 3

@@ -22,15 +22,17 @@ class User(Base):
 
 class Match(Base):
     __tablename__ = "matches"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     format = Column(Enum(MatchFormat), nullable=False)
     venue = Column(String, nullable=False)
     date = Column(Date, nullable=False)
     status = Column(Enum(MatchStatus), default=MatchStatus.UPCOMING, nullable=False)
-    
+    player_of_match_id = Column(Integer, ForeignKey("players.id"), nullable=True)
+
     teams = relationship("Team", back_populates="match", cascade="all, delete-orphan")
     deliveries = relationship("Delivery", back_populates="match", cascade="all, delete-orphan")
+    player_of_match = relationship("Player", foreign_keys=[player_of_match_id])
 
 class Team(Base):
     __tablename__ = "teams"

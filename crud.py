@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from fastapi import HTTPException
+from typing import List, Optional
 import models
 import schemas
-from models import MatchFormat
+from models import MatchFormat, MatchStatus
 
 def get_match(db: Session, match_id: int):
     return db.query(models.Match).filter(models.Match.id == match_id).first()
@@ -40,6 +41,26 @@ def create_match(db: Session, match: schemas.MatchCreate):
         
     db.commit()
     return db_match
+
+def add_players(db: Session, team_id: int, players: List[schemas.PlayerCreate]):
+    for p in players:
+        db.add(models.Player(team_id=team_id, **p.model_dump()))
+    db.commit()
+    return db.query(models.Team).filter(models.Team.id == team_id).first()
+
+def update_match_status(
+    db: Session,
+    match_id: int,
+    status: MatchStatus,
+    player_of_match_id: Optional[int] = None,
+):
+    match = db.query(models.Match).filter(models.Match.id == match_id).first()
+    match.status = status
+    if player_of_match_id is not None:
+        match.player_of_match_id = player_of_match_id
+    db.commit()
+    db.refresh(match)
+    return match
 
 def is_legal_delivery(extra_type: str):
     # Wides and no-balls are not legal deliveries

@@ -4,3 +4,5 @@ metadata:
   name: postgres-configmap
 data:
   POSTGRES_DB: cricbuzz
+  DB_POOL_SIZE: "5"
+  DB_MAX_OVERFLOW: "10"

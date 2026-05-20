@@ -41,6 +41,9 @@ class PlayerResponse(PlayerBase):
     class Config:
         from_attributes = True
 
+class PlayersAdd(BaseModel):
+    players: List[PlayerCreate]
+
 # Team Schemas
 class TeamBase(BaseModel):
     name: str
@@ -73,6 +76,10 @@ class MatchResponse(MatchBase):
 
     class Config:
         from_attributes = True
+
+class MatchStatusUpdate(BaseModel):
+    status: MatchStatus
+    player_of_match_id: Optional[int] = None
 
 # Delivery Schemas
 class DeliveryBase(BaseModel):

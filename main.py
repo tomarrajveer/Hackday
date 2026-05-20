@@ -36,3 +36,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 @app.get("/")
 def root():
     return {"message": "Welcome to CricBuzz Live Match Tracker API"}
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
